@@ -6,6 +6,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AddFilter extends CommonFilterImpl {
     @Override
@@ -17,29 +20,23 @@ public class AddFilter extends CommonFilterImpl {
         while ((line = reader.readLine()) != null) {
             String[] tokens = line.split(" ");
 
-            if (tokens.length >= 4 && tokens[3].equals("EE")) { // EE 학생인지 확인
-                boolean has23456 = false;
+            // 조건: 전공이 CS가 아닌 경우
+            if (tokens.length >= 4 && !tokens[3].equals("CS")) {
+                List<String> courseList = new ArrayList<>(Arrays.asList(tokens).subList(4, tokens.length));
 
-                // 과목 ID 체크
-                for (int i = 4; i < tokens.length; i++) {
-                    if (tokens[i].equals("23456")) {
-                        has23456 = true;
-                        break;
-                    }
-                }
+                // 17651과 17652 과목 ID 제거
+                courseList.remove("17651");
+                courseList.remove("17652");
 
-                // 과목 ID 추가
-                if (!has23456) {
-                    StringBuilder updatedLine = new StringBuilder(line);
-                    updatedLine.append(" 23456");
-                    writer.write(updatedLine.toString());
-                    writer.newLine();
-                } else {
-                    writer.write(line);
-                    writer.newLine();
+                StringBuilder updatedLine = new StringBuilder();
+                for (int i = 0; i < 4; i++) { // 학번, 이름, 성, 전공까지 복사
+                    updatedLine.append(tokens[i]).append(" ");
                 }
-            } else {
-                writer.write(line);
+                for (String course : courseList) { // 수정된 과목 리스트 추가
+                    updatedLine.append(course).append(" ");
+                }
+                System.out.println("[AddFilter] Modified line: " + updatedLine.toString().trim()); // 디버깅용 콘솔 출력
+                writer.write(updatedLine.toString().trim());
                 writer.newLine();
             }
         }
