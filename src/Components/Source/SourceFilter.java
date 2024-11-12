@@ -1,29 +1,30 @@
-/**
- * Copyright(c) 2021 All rights reserved by Jungho Kim in Myungji University.
- */
 package Components.Source;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import Framework.CommonFilterImpl;
+import java.io.*;
 
-public class SourceFilter extends CommonFilterImpl{
-    private String sourceFile;
-    
-    public SourceFilter(String inputFile){
-        this.sourceFile = inputFile;
-    }    
+public class SourceFilter extends CommonFilterImpl {
+    private String filename;
+
+    public SourceFilter(String filename) {
+        this.filename = filename;
+    }
+
     @Override
     public boolean specificComputationForFilter() throws IOException {
-        int byte_read;    
-        BufferedInputStream br = new BufferedInputStream(new FileInputStream(new File(sourceFile)));
-        while(true) {
-            byte_read = br.read();
-            if (byte_read == -1) return true;
-            out.write(byte_read);
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.trim().isEmpty()) continue; // 빈 줄인 경우 건너뛰기
+
+            System.out.println("[SourceFilter] Read line: " + line); // 디버깅용 출력
+
+            for (char c : line.toCharArray()) {
+                out.write(c); // 각 문자를 다음 필터로 전달
+            }
+            out.write('\n'); // 줄바꿈 추가하여 한 줄로 전달
         }
+        reader.close();
+        return true;
     }
 }

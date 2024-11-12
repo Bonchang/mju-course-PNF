@@ -21,13 +21,21 @@ public class AddFilter extends CommonFilterImpl {
 
         String line;
         while ((line = reader.readLine()) != null) {
+            if (line.trim().isEmpty()) continue; // 빈 줄인 경우 건너뛰기
+
             String[] tokens = line.split(" ");
             String studentId = tokens[0];
+            String studentLastName = tokens[1];
+            String studentFirstName = tokens[2];
+            String studentMajor = tokens[3];
 
-            // 인덱스 범위가 유효한지 확인하고 과목 목록 추출
-            List<String> studentCourses = tokens.length > 4 ?
-                    Arrays.asList(tokens).subList(4, tokens.length) :
-                    Collections.emptyList();
+            // 유효한 과목 목록만 필터링하여 저장
+            List<String> studentCourses = new ArrayList<>();
+            for (int i = 4; i < tokens.length; i++) {
+                if (!tokens[i].isBlank()) {
+                    studentCourses.add(tokens[i]);
+                }
+            }
 
             boolean satisfiesPrerequisites = true;
 
@@ -43,11 +51,21 @@ public class AddFilter extends CommonFilterImpl {
             }
 
             // 조건에 따라 출력 파일 선택
-            String outputLine = studentId + " " + String.join(" ", studentCourses) + "\n";
+            StringBuilder outputLine = new StringBuilder();
+            outputLine.append(studentId).append(" ")
+                    .append(studentLastName).append(" ")
+                    .append(studentFirstName).append(" ")
+                    .append(studentMajor);
+            if (!studentCourses.isEmpty()) {
+                outputLine.append(" ").append(String.join(" ", studentCourses));
+            }
+
             if (satisfiesPrerequisites) {
-                writer1.write(outputLine); // 만족하는 학생 정보는 Output-1.txt에
+                writer1.write(outputLine.toString());
+                writer1.newLine();
             } else {
-                writer2.write(outputLine); // 만족하지 않는 학생 정보는 Output-2.txt에
+                writer2.write(outputLine.toString());
+                writer2.newLine();
             }
         }
 
