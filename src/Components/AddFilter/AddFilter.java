@@ -12,24 +12,18 @@ public class AddFilter extends CommonFilterImpl {
     public boolean specificComputationForFilter() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
-
         String line;
         while ((line = reader.readLine()) != null) {
             String[] tokens = line.split(" ");
-
             if (tokens.length >= 4 && tokens[3].equals("EE")) { // EE 학생인지 확인
                 boolean has23456 = false;
-
-                // 과목 ID 체크
-                for (int i = 4; i < tokens.length; i++) {
+                for (int i = 4; i < tokens.length; i++) { // 과목 ID 체크
                     if (tokens[i].equals("23456")) {
                         has23456 = true;
                         break;
                     }
                 }
-
-                // 과목 ID 추가
-                if (!has23456) {
+                if (!has23456) { // 과목 ID 추가
                     StringBuilder updatedLine = new StringBuilder(line);
                     updatedLine.append(" 23456");
                     writer.write(updatedLine.toString());
@@ -43,7 +37,6 @@ public class AddFilter extends CommonFilterImpl {
                 writer.newLine();
             }
         }
-
         reader.close();
         writer.close();
         return true;
