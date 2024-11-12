@@ -1,39 +1,35 @@
-/**
- * Copyright(c) 2021 All rights reserved by Jungho Kim in Myungji University.
- */
 package Components.Middle;
 
-import java.io.IOException;
 import Framework.CommonFilterImpl;
+import java.io.*;
+import java.util.*;
 
 public class MiddleFilter extends CommonFilterImpl {
+    // 선수 과목 정보를 저장하는 맵 <과목 ID, 선수 과목 목록>
+    private Map<String, List<String>> coursePrerequisites = new HashMap<>();
+
     @Override
     public boolean specificComputationForFilter() throws IOException {
-        int byte_read = 0;
-        StringBuilder lineBuilder = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
 
-        while (true) {
-            byte_read = in.read();
-            if (byte_read == -1) break;
-
-            // 줄바꿈 시 현재 라인 처리
-            if (byte_read == '\n') {
-                String line = lineBuilder.toString().trim();
-                String[] tokens = line.split(" ");
-
-                // 조건: 학번이 2013으로 시작하는 학생만 전달
-                if (tokens.length >= 1 && tokens[0].startsWith("2013")) {
-                    System.out.println("[MiddleFilter] Passing line: " + line); // 디버깅용 콘솔 출력
-                    for (char c : line.toCharArray()) {
-                        out.write(c);
-                    }
-                    out.write('\n');
-                }
-                lineBuilder.setLength(0); // 다음 라인을 위해 초기화
+        while ((line = reader.readLine()) != null) {
+            String[] tokens = line.split(" ");
+            String courseId = tokens[0];
+            if (tokens.length > 3) { // 선수 과목이 있는 경우
+                List<String> prerequisites = Arrays.asList(tokens).subList(3, tokens.length);
+                coursePrerequisites.put(courseId, prerequisites);
             } else {
-                lineBuilder.append((char) byte_read);
+                coursePrerequisites.put(courseId, new ArrayList<>()); // 선수 과목이 없는 경우 빈 리스트로 저장
             }
         }
+
+        reader.close();
         return true;
+    }
+
+    // AddFilter에서 사용할 수 있도록 선수 과목 정보를 반환하는 메서드
+    public Map<String, List<String>> getCoursePrerequisites() {
+        return coursePrerequisites;
     }
 }
