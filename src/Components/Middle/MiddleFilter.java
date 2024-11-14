@@ -17,7 +17,6 @@ public class MiddleFilter extends CommonFilterImpl {
         int byte_read = 0;
 
         while (true) {
-            // check "EE" on byte_read from student information
             while (byte_read != '\n' && byte_read != -1) {
                 byte_read = in.read();
                 if (byte_read == ' ') numOfBlank++;
